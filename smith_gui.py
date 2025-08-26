@@ -388,14 +388,20 @@ class SmithChartApp(tk.Tk):
         tk.Button(btn_frame, text="Add Stub", command=self.add_stub).pack(fill="x")
         tk.Button(btn_frame, text="Remove Last", command=self.remove_last).pack(fill="x")
 
+        self.canvas.bind("<Configure>", self.on_canvas_resize)
+        self.adm_canvas.bind("<Configure>", self.on_canvas_resize)
+
         self.draw_chart()
         self.update_point()
         self.draw_circuit()
 
     def draw_one_chart(self, canvas, mode="impedance"):
         canvas.delete("all")
-        w = int(canvas["width"])
-        h = int(canvas["height"])
+        w = canvas.winfo_width()
+        h = canvas.winfo_height()
+        if w <= 1 or h <= 1:
+            w = int(canvas["width"])
+            h = int(canvas["height"])
         center = w // 2, h // 2
         radius = min(w, h) // 2 - 10
         cx, cy = center
@@ -431,6 +437,10 @@ class SmithChartApp(tk.Tk):
         self.center_y, self.radius_y = self.draw_one_chart(self.adm_canvas, "admittance")
         self.point = self.canvas.create_oval(self.center[0], self.center[1], self.center[0], self.center[1], fill="red")
         self.adm_point = self.adm_canvas.create_oval(self.center_y[0], self.center_y[1], self.center_y[0], self.center_y[1], fill="red")
+
+    def on_canvas_resize(self, event):
+        self.draw_chart()
+        self.update_point()
 
     def add_inductor(self):
         dlg = ComponentDialog(self, "L", index=len(self.components))
