@@ -378,6 +378,11 @@ class SmithChartApp(tk.Tk):
         self.circ_canvas = tk.Canvas(right, width=200, height=120, bg="white")
         self.circ_canvas.pack(fill="x")
 
+        # show coordinates of the current impedance/admittance point
+        self.coord_var = tk.StringVar()
+        self.coord_label = tk.Label(right, textvariable=self.coord_var, justify="left")
+        self.coord_label.pack(fill="x", pady=5)
+
         btn_frame = tk.Frame(right)
         btn_frame.pack(fill="x")
 
@@ -406,30 +411,31 @@ class SmithChartApp(tk.Tk):
         radius = min(w, h) // 2 - 10
         cx, cy = center
         r = radius
+        text_font = ("TkDefaultFont", max(8, int(r / 12)))
         canvas.create_oval(cx - r, cy - r, cx + r, cy + r)
         canvas.create_line(cx - r, cy, cx + r, cy, fill="lightgray")
         canvas.create_line(cx, cy - r, cx, cy + r, fill="lightgray")
         if mode == "impedance":
-            canvas.create_text(cx + r + 15, cy, text="Re(z/Z0)", anchor="w")
-            canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e")
-            canvas.create_text(cx, cy - r - 15, text="Im(z/Z0)", anchor="s")
-            canvas.create_text(cx, cy + r + 15, text="-Im(z/Z0)", anchor="n")
+            canvas.create_text(cx + r + 15, cy, text="Re(z/Z0)", anchor="w", font=text_font)
+            canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e", font=text_font)
+            canvas.create_text(cx, cy - r - 15, text="Im(z/Z0)", anchor="s", font=text_font)
+            canvas.create_text(cx, cy + r + 15, text="-Im(z/Z0)", anchor="n", font=text_font)
         else:
-            canvas.create_text(cx + r + 15, cy, text="Re(y/Y0)", anchor="w")
-            canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e")
-            canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s")
-            canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n")
+            canvas.create_text(cx + r + 15, cy, text="Re(y/Y0)", anchor="w", font=text_font)
+            canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e", font=text_font)
+            canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s", font=text_font)
+            canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n", font=text_font)
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / (1 + val)
             off = r * val / (1 + val)
             canvas.create_oval(cx + off - cr, cy - cr, cx + off + cr, cy + cr, outline="lightgray")
-            canvas.create_text(cx + off + cr + 15, cy, text=f"r={val}", anchor="w", fill="gray")
+            canvas.create_text(cx + off + cr + 15, cy, text=f"r={val}", anchor="w", fill="gray", font=text_font)
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / val
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=90, extent=180, style='arc', outline="lightgray")
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=-90, extent=180, style='arc', outline="lightgray")
-            canvas.create_text(cx, cy - cr - 10, text=f"+jx={val}", fill="gray")
-            canvas.create_text(cx, cy + cr + 10, text=f"-jx={val}", fill="gray")
+            canvas.create_text(cx, cy - cr - 10, text=f"+jx={val}", fill="gray", font=text_font)
+            canvas.create_text(cx, cy + cr + 10, text=f"-jx={val}", fill="gray", font=text_font)
         return center, radius
 
     def draw_chart(self):
@@ -625,6 +631,15 @@ class SmithChartApp(tk.Tk):
         self.canvas.coords(self.point, x-5, y-5, x+5, y+5)
         x, y = pts_y[-1]
         self.adm_canvas.coords(self.adm_point, x-5, y-5, x+5, y+5)
+
+        # show numeric values for the current point
+        zn = Z / self.z0
+        gamma = (Z - self.z0) / (Z + self.z0)
+        self.coord_var.set(
+            f"Z = {Z.real:.2f} {Z.imag:+.2f}j \u03a9\n"
+            f"r = {zn.real:.3f}, x = {zn.imag:.3f}\n"
+            f"\u0393 = {gamma.real:.3f} {gamma.imag:+.3f}j"
+        )
 
     def draw_circuit(self):
         c = self.circ_canvas
