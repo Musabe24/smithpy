@@ -360,11 +360,14 @@ class SmithChartApp(tk.Tk):
         self.z0_entry.grid(row=0, column=3)
         self.z0_entry.insert(0, str(self.z0))
 
-        tk.Label(settings, text="Z_A").grid(row=1, column=0)
+        self.za_mode = tk.StringVar(value="Z")
+        self.za_label = tk.Label(settings, text="Z_A")
+        self.za_label.grid(row=1, column=0)
         self.za_entry = tk.Entry(settings, width=12)
         self.za_entry.grid(row=1, column=1, columnspan=3, sticky="we")
         self.za_entry.insert(0, "50+0j")
-        tk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=4, rowspan=2, sticky="ns")
+        tk.OptionMenu(settings, self.za_mode, "Z", "Y", command=lambda _: self.update_za_label()).grid(row=1, column=4)
+        tk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=2, sticky="ns")
 
         self.canvas = tk.Canvas(top_canvas, width=600, height=300, bg="white")
         self.canvas.pack(fill="both", expand=True)
@@ -382,6 +385,8 @@ class SmithChartApp(tk.Tk):
         self.coord_var = tk.StringVar()
         self.coord_label = tk.Label(right, textvariable=self.coord_var, justify="left")
         self.coord_label.pack(fill="x", pady=5)
+
+        self.update_za_label()
 
         btn_frame = tk.Frame(right)
         btn_frame.pack(fill="x")
@@ -411,8 +416,9 @@ class SmithChartApp(tk.Tk):
         radius = min(w, h) // 2 - 10
         cx, cy = center
         r = radius
-        # slightly smaller dynamic font for chart annotations
+        # dynamic fonts for chart annotations
         text_font = ("TkDefaultFont", max(8, int(r / 18)))
+        title_font = ("TkDefaultFont", max(10, int(r / 14)))
         canvas.create_oval(cx - r, cy - r, cx + r, cy + r)
         canvas.create_line(cx - r, cy, cx + r, cy, fill="lightgray")
         canvas.create_line(cx, cy - r, cx, cy + r, fill="lightgray")
@@ -421,11 +427,13 @@ class SmithChartApp(tk.Tk):
             canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e", font=text_font)
             canvas.create_text(cx, cy - r - 15, text="Im(z/Z0)", anchor="s", font=text_font)
             canvas.create_text(cx, cy + r + 15, text="-Im(z/Z0)", anchor="n", font=text_font)
+            canvas.create_text(cx, 10, text="Impedanzebene", anchor="n", font=title_font)
         else:
             canvas.create_text(cx + r + 15, cy, text="Re(y/Y0)", anchor="w", font=text_font)
             canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e", font=text_font)
             canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s", font=text_font)
             canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n", font=text_font)
+            canvas.create_text(cx, 10, text="Admittanzebene", anchor="n", font=title_font)
 
         # ticks and labels on the real axis
         real_vals = [0, 0.2, 0.5, 1, 2, 5]
@@ -438,6 +446,23 @@ class SmithChartApp(tk.Tk):
             canvas.create_text(x, cy + 10, text=str(val), fill="gray", font=text_font, anchor="n")
         canvas.create_line(cx + r, cy - 5, cx + r, cy + 5, fill="gray")
         canvas.create_text(cx + r, cy + 10, text="∞", fill="gray", font=text_font, anchor="n")
+
+        # ticks and labels on the imaginary axis
+        imag_vals = [0.2, 0.5, 1, 2, 5]
+        for val in imag_vals:
+            off = r * val / (val + 1)
+            canvas.create_line(cx - 5, cy - off, cx + 5, cy - off, fill="gray")
+            canvas.create_line(cx - 5, cy + off, cx + 5, cy + off, fill="gray")
+            top_label = f"+j{val}" if mode == "impedance" else f"+jb{val}"
+            bot_label = f"-j{val}" if mode == "impedance" else f"-jb{val}"
+            canvas.create_text(cx + 10, cy - off, text=top_label, fill="gray", font=text_font, anchor="w")
+            canvas.create_text(cx + 10, cy + off, text=bot_label, fill="gray", font=text_font, anchor="w")
+        canvas.create_line(cx - 5, cy - r, cx + 5, cy - r, fill="gray")
+        inf_top = "+j∞" if mode == "impedance" else "+jb∞"
+        canvas.create_text(cx + 10, cy - r, text=inf_top, fill="gray", font=text_font, anchor="w")
+        canvas.create_line(cx - 5, cy + r, cx + 5, cy + r, fill="gray")
+        inf_bot = "-j∞" if mode == "impedance" else "-jb∞"
+        canvas.create_text(cx + 10, cy + r, text=inf_bot, fill="gray", font=text_font, anchor="w")
 
         # constant resistance/conductance circles
         for val in [0.2, 0.5, 1, 2, 5]:
@@ -525,13 +550,22 @@ class SmithChartApp(tk.Tk):
             self.update_point()
             self.draw_circuit()
 
+    def update_za_label(self):
+        self.za_label.config(text="Z_A" if self.za_mode.get() == "Z" else "Y_A")
+
     def apply_settings(self):
         try:
             self.freq = float(self.freq_entry.get()) * 1e6
             self.z0 = float(self.z0_entry.get())
-            self.za = parse_complex_impedance(self.za_entry.get())
+            if self.za_mode.get() == "Z":
+                self.za = parse_complex_impedance(self.za_entry.get())
+            else:
+                ya = parse_complex_impedance(self.za_entry.get())
+                if ya == 0:
+                    raise ValueError
+                self.za = 1 / ya
         except ValueError:
-            messagebox.showerror("Error", "Invalid frequency, Z0 or Z_A")
+            messagebox.showerror("Error", "Invalid frequency, Z0 or Z_A/Y_A")
             return
         self.draw_chart()
         self.update_point()
@@ -681,7 +715,8 @@ class SmithChartApp(tk.Tk):
         c.create_oval(src_x-5, y-5, src_x+5, y+5)
         c.create_text(src_x, y+15, text="Src")
         c.create_rectangle(load_x-10, y-10, load_x+10, y+10)
-        c.create_text(load_x, y+20, text=f"Z_A\n{self.za_entry.get()}")
+        load_lbl = "Z_A" if self.za_mode.get() == "Z" else "Y_A"
+        c.create_text(load_x, y+20, text=f"{load_lbl}\n{self.za_entry.get()}")
         # draw components starting at the load and moving toward the source
         x = load_x - 20
         for comp in self.components:
