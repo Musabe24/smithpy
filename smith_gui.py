@@ -5,7 +5,7 @@ import math
 
 PI2 = 2 * 3.141592653589793
 # number of intermediate points for each component
-TRACE_STEPS = 100
+TRACE_STEPS = 1000
 
 
 def parse_lc_value(text):
