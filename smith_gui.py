@@ -411,7 +411,8 @@ class SmithChartApp(tk.Tk):
         radius = min(w, h) // 2 - 10
         cx, cy = center
         r = radius
-        text_font = ("TkDefaultFont", max(8, int(r / 12)))
+        # slightly smaller dynamic font for chart annotations
+        text_font = ("TkDefaultFont", max(8, int(r / 18)))
         canvas.create_oval(cx - r, cy - r, cx + r, cy + r)
         canvas.create_line(cx - r, cy, cx + r, cy, fill="lightgray")
         canvas.create_line(cx, cy - r, cx, cy + r, fill="lightgray")
@@ -425,17 +426,36 @@ class SmithChartApp(tk.Tk):
             canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e", font=text_font)
             canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s", font=text_font)
             canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n", font=text_font)
+
+        # ticks and labels on the real axis
+        real_vals = [0, 0.2, 0.5, 1, 2, 5]
+        for val in real_vals:
+            if val == 0:
+                x = cx - r
+            else:
+                x = cx + r * (val - 1) / (val + 1)
+            canvas.create_line(x, cy - 5, x, cy + 5, fill="gray")
+            canvas.create_text(x, cy + 10, text=str(val), fill="gray", font=text_font, anchor="n")
+        canvas.create_line(cx + r, cy - 5, cx + r, cy + 5, fill="gray")
+        canvas.create_text(cx + r, cy + 10, text="∞", fill="gray", font=text_font, anchor="n")
+
+        # constant resistance/conductance circles
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / (1 + val)
             off = r * val / (1 + val)
             canvas.create_oval(cx + off - cr, cy - cr, cx + off + cr, cy + cr, outline="lightgray")
-            canvas.create_text(cx + off + cr + 15, cy, text=f"r={val}", anchor="w", fill="gray", font=text_font)
+            label = f"r={val}" if mode == "impedance" else f"g={val}"
+            canvas.create_text(cx + off + cr + 15, cy, text=label, anchor="w", fill="gray", font=text_font)
+
+        # constant reactance/susceptance arcs
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / val
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=90, extent=180, style='arc', outline="lightgray")
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=-90, extent=180, style='arc', outline="lightgray")
-            canvas.create_text(cx, cy - cr - 10, text=f"+jx={val}", fill="gray", font=text_font)
-            canvas.create_text(cx, cy + cr + 10, text=f"-jx={val}", fill="gray", font=text_font)
+            top_label = f"+jx={val}" if mode == "impedance" else f"+jb={val}"
+            bot_label = f"-jx={val}" if mode == "impedance" else f"-jb={val}"
+            canvas.create_text(cx, cy - cr - 10, text=top_label, fill="gray", font=text_font)
+            canvas.create_text(cx, cy + cr + 10, text=bot_label, fill="gray", font=text_font)
         return center, radius
 
     def draw_chart(self):
@@ -632,14 +652,23 @@ class SmithChartApp(tk.Tk):
         x, y = pts_y[-1]
         self.adm_canvas.coords(self.adm_point, x-5, y-5, x+5, y+5)
 
-        # show numeric values for the current point
+        # show numeric values for the current point in impedance and admittance form
         zn = Z / self.z0
         gamma = (Z - self.z0) / (Z + self.z0)
-        self.coord_var.set(
+        Y = 1 / Z if Z != 0 else complex('inf')
+        yn = Y * self.z0 if Y != complex('inf') else complex('inf')
+        text = (
             f"Z = {Z.real:.2f} {Z.imag:+.2f}j \u03a9\n"
             f"r = {zn.real:.3f}, x = {zn.imag:.3f}\n"
-            f"\u0393 = {gamma.real:.3f} {gamma.imag:+.3f}j"
         )
+        if Y != complex('inf'):
+            text += f"Y = {Y.real:.4f} {Y.imag:+.4f}j S\n"
+        else:
+            text += "Y = \u221E S\n"
+        if yn != complex('inf'):
+            text += f"g = {yn.real:.3f}, b = {yn.imag:.3f}\n"
+        text += f"\u0393 = {gamma.real:.3f} {gamma.imag:+.3f}j"
+        self.coord_var.set(text)
 
     def draw_circuit(self):
         c = self.circ_canvas
