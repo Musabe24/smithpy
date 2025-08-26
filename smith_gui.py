@@ -421,7 +421,6 @@ class SmithChartApp(tk.Tk):
         title_font = ("TkDefaultFont", max(10, int(r / 14)))
         canvas.create_oval(cx - r, cy - r, cx + r, cy + r)
         canvas.create_line(cx - r, cy, cx + r, cy, fill="lightgray")
-        canvas.create_line(cx, cy - r, cx, cy + r, fill="lightgray")
         if mode == "impedance":
             canvas.create_text(cx + r + 15, cy, text="Re(z/Z0)", anchor="w", font=text_font)
             canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e", font=text_font)
@@ -447,22 +446,20 @@ class SmithChartApp(tk.Tk):
         canvas.create_line(cx + r, cy - 5, cx + r, cy + 5, fill="gray")
         canvas.create_text(cx + r, cy + 10, text="∞", fill="gray", font=text_font, anchor="n")
 
-        # ticks and labels on the imaginary axis
+        # ticks and labels on the imaginary axis at the outer radius
         imag_vals = [0.2, 0.5, 1, 2, 5]
         for val in imag_vals:
-            off = r * val / (val + 1)
-            canvas.create_line(cx - 5, cy - off, cx + 5, cy - off, fill="gray")
-            canvas.create_line(cx - 5, cy + off, cx + 5, cy + off, fill="gray")
-            top_label = f"+j{val}" if mode == "impedance" else f"+jb{val}"
-            bot_label = f"-j{val}" if mode == "impedance" else f"-jb{val}"
-            canvas.create_text(cx + 10, cy - off, text=top_label, fill="gray", font=text_font, anchor="w")
-            canvas.create_text(cx + 10, cy + off, text=bot_label, fill="gray", font=text_font, anchor="w")
-        canvas.create_line(cx - 5, cy - r, cx + 5, cy - r, fill="gray")
-        inf_top = "+j∞" if mode == "impedance" else "+jb∞"
-        canvas.create_text(cx + 10, cy - r, text=inf_top, fill="gray", font=text_font, anchor="w")
-        canvas.create_line(cx - 5, cy + r, cx + 5, cy + r, fill="gray")
-        inf_bot = "-j∞" if mode == "impedance" else "-jb∞"
-        canvas.create_text(cx + 10, cy + r, text=inf_bot, fill="gray", font=text_font, anchor="w")
+            theta = 2 * math.atan(1 / val)
+            x = cx + r * math.cos(theta)
+            y = cy - r * math.sin(theta)
+            canvas.create_line(x, y, x + 5 * math.cos(theta), y - 5 * math.sin(theta), fill="gray")
+            label = f"+j{val}" if mode == "impedance" else f"+jb{val}"
+            canvas.create_text(x + 10 * math.cos(theta), y - 10 * math.sin(theta), text=label, fill="gray", font=text_font)
+            x = cx + r * math.cos(theta)
+            y = cy + r * math.sin(theta)
+            canvas.create_line(x, y, x + 5 * math.cos(theta), y + 5 * math.sin(theta), fill="gray")
+            label = f"-j{val}" if mode == "impedance" else f"-jb{val}"
+            canvas.create_text(x + 10 * math.cos(theta), y + 10 * math.sin(theta), text=label, fill="gray", font=text_font)
 
         # constant resistance/conductance circles
         for val in [0.2, 0.5, 1, 2, 5]:
@@ -477,10 +474,6 @@ class SmithChartApp(tk.Tk):
             cr = r / val
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=90, extent=180, style='arc', outline="lightgray")
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=-90, extent=180, style='arc', outline="lightgray")
-            top_label = f"+jx={val}" if mode == "impedance" else f"+jb={val}"
-            bot_label = f"-jx={val}" if mode == "impedance" else f"-jb={val}"
-            canvas.create_text(cx, cy - cr - 10, text=top_label, fill="gray", font=text_font)
-            canvas.create_text(cx, cy + cr + 10, text=bot_label, fill="gray", font=text_font)
         return center, radius
 
     def draw_chart(self):
