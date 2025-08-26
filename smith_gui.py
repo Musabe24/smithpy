@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import re
 import math
 
@@ -92,18 +92,18 @@ class ComponentDialog(tk.Toplevel):
         row = 0
         if self.ctype in ("L", "C", "R"):
             lbl = "Value (e.g., 10 nH)" if self.ctype in ("L", "C") else "Value (Ohm)"
-            tk.Label(self, text=lbl).grid(row=row, column=0)
-            self.val_entry = tk.Entry(self)
+            ttk.Label(self, text=lbl).grid(row=row, column=0)
+            self.val_entry = ttk.Entry(self)
             self.val_entry.grid(row=row, column=1)
             self.val_entry.insert(0, data.get("disp", ""))
             row += 1
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", 100)))
             row += 1
@@ -121,26 +121,26 @@ class ComponentDialog(tk.Toplevel):
                 else:
                     self.scale.set(data["value"])
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Orientation").grid(row=row, column=0)
+            ttk.Label(self, text="Orientation").grid(row=row, column=0)
             self.orient = tk.StringVar(value=data.get("orient", "series"))
-            tk.OptionMenu(self, self.orient, "series", "shunt").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.orient, "series", "series", "shunt").grid(row=row, column=1)
         elif self.ctype == "TL":
-            tk.Label(self, text="Length").grid(row=row, column=0)
-            self.len_entry = tk.Entry(self)
+            ttk.Label(self, text="Length").grid(row=row, column=0)
+            self.len_entry = ttk.Entry(self)
             self.len_entry.grid(row=row, column=1)
             self.len_entry.insert(0, data.get("len_disp", ""))
             row += 1
             mode = data.get("len_mode", "deg")
             to_val = 180 if mode == "deg" else 0.5
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", to_val)))
             row += 1
@@ -156,31 +156,31 @@ class ComponentDialog(tk.Toplevel):
                 val = data["length"] if mode == "deg" else data["length"] / 360.0
                 self.scale.set(val)
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Mode").grid(row=row, column=0)
+            ttk.Label(self, text="Mode").grid(row=row, column=0)
             self.len_mode = tk.StringVar(value=data.get("len_mode", "deg"))
-            tk.OptionMenu(self, self.len_mode, "deg", "lambda").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.len_mode, mode, "deg", "lambda").grid(row=row, column=1)
             row += 1
-            tk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
-            self.z0_entry = tk.Entry(self)
+            ttk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
+            self.z0_entry = ttk.Entry(self)
             self.z0_entry.grid(row=row, column=1)
             self.z0_entry.insert(0, str(data.get("z0", getattr(self.master, 'z0', 50))))
         elif self.ctype == "STUB":
-            tk.Label(self, text="Length").grid(row=row, column=0)
-            self.len_entry = tk.Entry(self)
+            ttk.Label(self, text="Length").grid(row=row, column=0)
+            self.len_entry = ttk.Entry(self)
             self.len_entry.grid(row=row, column=1)
             self.len_entry.insert(0, data.get("len_disp", ""))
             row += 1
             mode = data.get("len_mode", "deg")
             to_val = 180 if mode == "deg" else 0.5
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", to_val)))
             row += 1
@@ -196,22 +196,22 @@ class ComponentDialog(tk.Toplevel):
                 val = data["length"] if mode == "deg" else data["length"] / 360.0
                 self.scale.set(val)
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Mode").grid(row=row, column=0)
+            ttk.Label(self, text="Mode").grid(row=row, column=0)
             self.len_mode = tk.StringVar(value=data.get("len_mode", "deg"))
-            tk.OptionMenu(self, self.len_mode, "deg", "lambda").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.len_mode, mode, "deg", "lambda").grid(row=row, column=1)
             row += 1
-            tk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
-            self.z0_entry = tk.Entry(self)
+            ttk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
+            self.z0_entry = ttk.Entry(self)
             self.z0_entry.grid(row=row, column=1)
             self.z0_entry.insert(0, str(data.get("z0", getattr(self.master, 'z0', 50))))
             row += 1
-            tk.Label(self, text="Type").grid(row=row, column=0)
+            ttk.Label(self, text="Type").grid(row=row, column=0)
             self.kind = tk.StringVar(value=data.get("kind", "open"))
-            tk.OptionMenu(self, self.kind, "open", "short").grid(row=row, column=1)
-        tk.Button(self, text="OK", command=self.ok).grid(row=row+1, column=0)
-        tk.Button(self, text="Cancel", command=self.cancel).grid(row=row+1, column=1)
+            ttk.OptionMenu(self, self.kind, self.kind.get(), "open", "short").grid(row=row, column=1)
+        ttk.Button(self, text="OK", command=self.ok).grid(row=row+1, column=0)
+        ttk.Button(self, text="Cancel", command=self.cancel).grid(row=row+1, column=1)
 
     def ok(self):
         try:
@@ -331,43 +331,63 @@ class SmithChartApp(tk.Tk):
         super().__init__()
         self.title("Interactive Smith Chart")
 
+        style = ttk.Style(self)
+        try:
+            style.theme_use("clam")
+        except Exception:
+            pass
+        style.configure("TLabel", font=("Segoe UI", 10))
+        style.configure("TButton", font=("Segoe UI", 10))
+        style.configure("TEntry", font=("Segoe UI", 10))
+
         # data
         self.components = []  # list of component dicts
         self.freq = 1e9  # 1 GHz for calculations
         self.z0 = 50.0
         self.za = 50+0j
 
+        menubar = tk.Menu(self)
+        filem = tk.Menu(menubar, tearoff=0)
+        filem.add_command(label="Reset", command=self.reset_app)
+        filem.add_separator()
+        filem.add_command(label="Quit", command=self.destroy)
+        menubar.add_cascade(label="File", menu=filem)
+        helpm = tk.Menu(menubar, tearoff=0)
+        helpm.add_command(label="About", command=lambda: messagebox.showinfo("About", "Interactive Smith Chart"))
+        menubar.add_cascade(label="Help", menu=helpm)
+        self.config(menu=menubar)
+
         # layout
-        left = tk.Frame(self)
-        right = tk.Frame(self)
+        left = ttk.Frame(self)
+        right = ttk.Frame(self)
         left.pack(side="left", fill="both", expand=True)
         right.pack(side="right", fill="y")
 
-        top_canvas = tk.Frame(left)
-        bottom_canvas = tk.Frame(left)
+        top_canvas = ttk.Frame(left)
+        bottom_canvas = ttk.Frame(left)
         top_canvas.pack(fill="both", expand=True)
         bottom_canvas.pack(fill="both", expand=True)
 
         # settings
-        settings = tk.Frame(right)
-        settings.pack(fill="x")
-        tk.Label(settings, text="Freq [MHz]").grid(row=0, column=0)
-        self.freq_entry = tk.Entry(settings, width=12)
+        settings = ttk.LabelFrame(right, text="Settings")
+        settings.pack(fill="x", padx=5, pady=5)
+        ttk.Label(settings, text="Freq [MHz]").grid(row=0, column=0, sticky="w")
+        self.freq_entry = ttk.Entry(settings, width=12)
         self.freq_entry.grid(row=0, column=1)
         self.freq_entry.insert(0, str(self.freq / 1e6))
-        tk.Label(settings, text="Z0").grid(row=0, column=2)
-        self.z0_entry = tk.Entry(settings, width=6)
+        ttk.Label(settings, text="Z0").grid(row=0, column=2, sticky="w")
+        self.z0_entry = ttk.Entry(settings, width=6)
         self.z0_entry.grid(row=0, column=3)
         self.z0_entry.insert(0, str(self.z0))
 
         self.za_mode = tk.StringVar(value="Z")
-        self.za_label = tk.Label(settings, text="Z_A")
+        self.za_label = ttk.Label(settings, text="Z_A")
         self.za_label.grid(row=1, column=0)
-        self.za_entry = tk.Entry(settings, width=12)
+        self.za_entry = ttk.Entry(settings, width=12)
         self.za_entry.grid(row=1, column=1, columnspan=3, sticky="we")
         self.za_entry.insert(0, "50+0j")
-        tk.OptionMenu(settings, self.za_mode, "Z", "Y", command=lambda _: self.update_za_label()).grid(row=1, column=4)
-        tk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=2, sticky="ns")
+        ttk.OptionMenu(settings, self.za_mode, self.za_mode.get(), "Z", "Y", command=lambda _: self.update_za_label()).grid(row=1, column=4)
+        ttk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=2, sticky="ns")
 
         self.canvas = tk.Canvas(top_canvas, width=600, height=300, bg="white")
         self.canvas.pack(fill="both", expand=True)
@@ -375,28 +395,27 @@ class SmithChartApp(tk.Tk):
         self.adm_canvas.pack(fill="both", expand=True)
 
         self.comp_listbox = tk.Listbox(right, width=40)
-        self.comp_listbox.pack(fill="y")
+        self.comp_listbox.pack(fill="y", padx=5)
         self.comp_listbox.bind("<Double-Button-1>", self.edit_component)
 
         self.circ_canvas = tk.Canvas(right, width=200, height=120, bg="white")
-        self.circ_canvas.pack(fill="x")
+        self.circ_canvas.pack(fill="x", padx=5)
 
-        # show coordinates of the current impedance/admittance point
-        self.coord_var = tk.StringVar()
-        self.coord_label = tk.Label(right, textvariable=self.coord_var, justify="left")
-        self.coord_label.pack(fill="x", pady=5)
+        # status bar for coordinates
+        self.coord_var = tk.StringVar(value="Bereit")
+        self.status = ttk.Label(self, textvariable=self.coord_var, relief="sunken", anchor="w")
+        self.status.pack(side="bottom", fill="x")
 
         self.update_za_label()
 
-        btn_frame = tk.Frame(right)
-        btn_frame.pack(fill="x")
-
-        tk.Button(btn_frame, text="Add Resistor", command=self.add_resistor).pack(fill="x")
-        tk.Button(btn_frame, text="Add Inductor", command=self.add_inductor).pack(fill="x")
-        tk.Button(btn_frame, text="Add Capacitor", command=self.add_capacitor).pack(fill="x")
-        tk.Button(btn_frame, text="Add TL", command=self.add_tline).pack(fill="x")
-        tk.Button(btn_frame, text="Add Stub", command=self.add_stub).pack(fill="x")
-        tk.Button(btn_frame, text="Remove Last", command=self.remove_last).pack(fill="x")
+        control = ttk.LabelFrame(right, text="Components")
+        control.pack(fill="x", padx=5, pady=5)
+        self.comp_type = tk.StringVar(value="Resistor")
+        ttk.Combobox(control, textvariable=self.comp_type,
+                     values=["Resistor", "Inductor", "Capacitor", "TL", "Stub"],
+                     state="readonly").pack(fill="x", padx=5, pady=2)
+        ttk.Button(control, text="Add", command=self.add_component).pack(fill="x", padx=5, pady=2)
+        ttk.Button(control, text="Remove Last", command=self.remove_last).pack(fill="x", padx=5, pady=2)
 
         self.canvas.bind("<Configure>", self.on_canvas_resize)
         self.adm_canvas.bind("<Configure>", self.on_canvas_resize)
@@ -536,12 +555,43 @@ class SmithChartApp(tk.Tk):
             self.update_point()
             self.draw_circuit()
 
+    def add_component(self):
+        kind = self.comp_type.get()
+        if kind == "Resistor":
+            self.add_resistor()
+        elif kind == "Inductor":
+            self.add_inductor()
+        elif kind == "Capacitor":
+            self.add_capacitor()
+        elif kind == "TL":
+            self.add_tline()
+        else:
+            self.add_stub()
+
     def remove_last(self):
         if self.components:
             self.components.pop()
             self.comp_listbox.delete(tk.END)
             self.update_point()
             self.draw_circuit()
+
+    def reset_app(self):
+        self.components.clear()
+        self.comp_listbox.delete(0, tk.END)
+        self.freq = 1e9
+        self.z0 = 50.0
+        self.za = 50+0j
+        self.freq_entry.delete(0, tk.END)
+        self.freq_entry.insert(0, str(self.freq / 1e6))
+        self.z0_entry.delete(0, tk.END)
+        self.z0_entry.insert(0, str(self.z0))
+        self.za_mode.set("Z")
+        self.update_za_label()
+        self.za_entry.delete(0, tk.END)
+        self.za_entry.insert(0, "50+0j")
+        self.draw_chart()
+        self.update_point()
+        self.draw_circuit()
 
     def update_za_label(self):
         self.za_label.config(text="Z_A" if self.za_mode.get() == "Z" else "Y_A")
