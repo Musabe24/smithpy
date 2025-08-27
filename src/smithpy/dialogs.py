@@ -68,8 +68,15 @@ class ComponentDialog(tk.Toplevel):
             ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
             ttk.Label(self, text="Orientation").grid(row=row, column=0)
+            # Preserve existing orientation when editing a component.  Using a
+            # fixed default value for the ``ttk.OptionMenu`` would reset the
+            # ``StringVar`` to ``"series"`` regardless of the supplied data,
+            # causing shunt components to turn into series components when the
+            # dialog was opened for editing.  Initialise the menu with the
+            # current value of the variable instead so the orientation remains
+            # unchanged unless the user explicitly modifies it.
             self.orient = tk.StringVar(value=data.get("orient", "series"))
-            ttk.OptionMenu(self, self.orient, "series", "series", "shunt").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.orient, self.orient.get(), "series", "shunt").grid(row=row, column=1)
         elif self.ctype == "TL":
             ttk.Label(self, text="Length").grid(row=row, column=0)
             self.len_entry = ttk.Entry(self)
