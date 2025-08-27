@@ -4,7 +4,10 @@ import math
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from .parsing import parse_lc_value, parse_length, parse_ohm_value
+try:  # allow direct script execution
+    from .parsing import parse_lc_value, parse_length, parse_ohm_value
+except ImportError:  # pragma: no cover - direct execution fallback
+    from parsing import parse_lc_value, parse_length, parse_ohm_value
 
 
 class ComponentDialog(tk.Toplevel):

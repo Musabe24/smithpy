@@ -2,8 +2,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import math
 
-from .dialogs import ComponentDialog
-from .parsing import parse_complex_impedance
+try:  # allow running as a module or a script
+    from .dialogs import ComponentDialog
+    from .parsing import parse_complex_impedance
+except ImportError:  # pragma: no cover - direct execution fallback
+    from dialogs import ComponentDialog
+    from parsing import parse_complex_impedance
 
 PI2 = 2 * 3.141592653589793
 # default number of intermediate points for each component
