@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import re
 import math
 
 PI2 = 2 * 3.141592653589793
-# number of intermediate points for each component
-TRACE_STEPS = 1000
+# default number of intermediate points for each component
+TRACE_STEPS = 200
 
 
 def parse_lc_value(text):
@@ -92,18 +92,18 @@ class ComponentDialog(tk.Toplevel):
         row = 0
         if self.ctype in ("L", "C", "R"):
             lbl = "Value (e.g., 10 nH)" if self.ctype in ("L", "C") else "Value (Ohm)"
-            tk.Label(self, text=lbl).grid(row=row, column=0)
-            self.val_entry = tk.Entry(self)
+            ttk.Label(self, text=lbl).grid(row=row, column=0)
+            self.val_entry = ttk.Entry(self)
             self.val_entry.grid(row=row, column=1)
             self.val_entry.insert(0, data.get("disp", ""))
             row += 1
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", 100)))
             row += 1
@@ -121,26 +121,26 @@ class ComponentDialog(tk.Toplevel):
                 else:
                     self.scale.set(data["value"])
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Orientation").grid(row=row, column=0)
+            ttk.Label(self, text="Orientation").grid(row=row, column=0)
             self.orient = tk.StringVar(value=data.get("orient", "series"))
-            tk.OptionMenu(self, self.orient, "series", "shunt").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.orient, "series", "series", "shunt").grid(row=row, column=1)
         elif self.ctype == "TL":
-            tk.Label(self, text="Length").grid(row=row, column=0)
-            self.len_entry = tk.Entry(self)
+            ttk.Label(self, text="Length").grid(row=row, column=0)
+            self.len_entry = ttk.Entry(self)
             self.len_entry.grid(row=row, column=1)
             self.len_entry.insert(0, data.get("len_disp", ""))
             row += 1
             mode = data.get("len_mode", "deg")
             to_val = 180 if mode == "deg" else 0.5
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", to_val)))
             row += 1
@@ -156,31 +156,31 @@ class ComponentDialog(tk.Toplevel):
                 val = data["length"] if mode == "deg" else data["length"] / 360.0
                 self.scale.set(val)
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Mode").grid(row=row, column=0)
+            ttk.Label(self, text="Mode").grid(row=row, column=0)
             self.len_mode = tk.StringVar(value=data.get("len_mode", "deg"))
-            tk.OptionMenu(self, self.len_mode, "deg", "lambda").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.len_mode, mode, "deg", "lambda").grid(row=row, column=1)
             row += 1
-            tk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
-            self.z0_entry = tk.Entry(self)
+            ttk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
+            self.z0_entry = ttk.Entry(self)
             self.z0_entry.grid(row=row, column=1)
             self.z0_entry.insert(0, str(data.get("z0", getattr(self.master, 'z0', 50))))
         elif self.ctype == "STUB":
-            tk.Label(self, text="Length").grid(row=row, column=0)
-            self.len_entry = tk.Entry(self)
+            ttk.Label(self, text="Length").grid(row=row, column=0)
+            self.len_entry = ttk.Entry(self)
             self.len_entry.grid(row=row, column=1)
             self.len_entry.insert(0, data.get("len_disp", ""))
             row += 1
             mode = data.get("len_mode", "deg")
             to_val = 180 if mode == "deg" else 0.5
-            tk.Label(self, text="Slider min").grid(row=row, column=0)
-            self.min_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider min").grid(row=row, column=0)
+            self.min_entry = ttk.Entry(self, width=6)
             self.min_entry.grid(row=row, column=1)
             self.min_entry.insert(0, str(data.get("min", 0)))
             row += 1
-            tk.Label(self, text="Slider max").grid(row=row, column=0)
-            self.max_entry = tk.Entry(self, width=6)
+            ttk.Label(self, text="Slider max").grid(row=row, column=0)
+            self.max_entry = ttk.Entry(self, width=6)
             self.max_entry.grid(row=row, column=1)
             self.max_entry.insert(0, str(data.get("max", to_val)))
             row += 1
@@ -196,22 +196,22 @@ class ComponentDialog(tk.Toplevel):
                 val = data["length"] if mode == "deg" else data["length"] / 360.0
                 self.scale.set(val)
             row += 1
-            tk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
+            ttk.Button(self, text="Update Range", command=self.update_scale_range).grid(row=row, column=0, columnspan=2)
             row += 1
-            tk.Label(self, text="Mode").grid(row=row, column=0)
+            ttk.Label(self, text="Mode").grid(row=row, column=0)
             self.len_mode = tk.StringVar(value=data.get("len_mode", "deg"))
-            tk.OptionMenu(self, self.len_mode, "deg", "lambda").grid(row=row, column=1)
+            ttk.OptionMenu(self, self.len_mode, mode, "deg", "lambda").grid(row=row, column=1)
             row += 1
-            tk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
-            self.z0_entry = tk.Entry(self)
+            ttk.Label(self, text="Z0 (Ohm)").grid(row=row, column=0)
+            self.z0_entry = ttk.Entry(self)
             self.z0_entry.grid(row=row, column=1)
             self.z0_entry.insert(0, str(data.get("z0", getattr(self.master, 'z0', 50))))
             row += 1
-            tk.Label(self, text="Type").grid(row=row, column=0)
+            ttk.Label(self, text="Type").grid(row=row, column=0)
             self.kind = tk.StringVar(value=data.get("kind", "open"))
-            tk.OptionMenu(self, self.kind, "open", "short").grid(row=row, column=1)
-        tk.Button(self, text="OK", command=self.ok).grid(row=row+1, column=0)
-        tk.Button(self, text="Cancel", command=self.cancel).grid(row=row+1, column=1)
+            ttk.OptionMenu(self, self.kind, self.kind.get(), "open", "short").grid(row=row, column=1)
+        ttk.Button(self, text="OK", command=self.ok).grid(row=row+1, column=0)
+        ttk.Button(self, text="Cancel", command=self.cancel).grid(row=row+1, column=1)
 
     def ok(self):
         try:
@@ -331,40 +331,69 @@ class SmithChartApp(tk.Tk):
         super().__init__()
         self.title("Interactive Smith Chart")
 
+        style = ttk.Style(self)
+        try:
+            style.theme_use("clam")
+        except Exception:
+            pass
+        style.configure("TLabel", font=("Segoe UI", 10))
+        style.configure("TButton", font=("Segoe UI", 10))
+        style.configure("TEntry", font=("Segoe UI", 10))
+
         # data
         self.components = []  # list of component dicts
         self.freq = 1e9  # 1 GHz for calculations
         self.z0 = 50.0
         self.za = 50+0j
+        self.trace_steps = TRACE_STEPS
+
+        menubar = tk.Menu(self)
+        filem = tk.Menu(menubar, tearoff=0)
+        filem.add_command(label="Reset", command=self.reset_app)
+        filem.add_separator()
+        filem.add_command(label="Quit", command=self.destroy)
+        menubar.add_cascade(label="File", menu=filem)
+        helpm = tk.Menu(menubar, tearoff=0)
+        helpm.add_command(label="About", command=lambda: messagebox.showinfo("About", "Interactive Smith Chart"))
+        menubar.add_cascade(label="Help", menu=helpm)
+        self.config(menu=menubar)
 
         # layout
-        left = tk.Frame(self)
-        right = tk.Frame(self)
+        left = ttk.Frame(self)
+        right = ttk.Frame(self)
         left.pack(side="left", fill="both", expand=True)
         right.pack(side="right", fill="y")
 
-        top_canvas = tk.Frame(left)
-        bottom_canvas = tk.Frame(left)
+        top_canvas = ttk.Frame(left)
+        bottom_canvas = ttk.Frame(left)
         top_canvas.pack(fill="both", expand=True)
         bottom_canvas.pack(fill="both", expand=True)
 
         # settings
-        settings = tk.Frame(right)
-        settings.pack(fill="x")
-        tk.Label(settings, text="Freq [MHz]").grid(row=0, column=0)
-        self.freq_entry = tk.Entry(settings, width=12)
+        settings = ttk.LabelFrame(right, text="Settings")
+        settings.pack(fill="x", padx=5, pady=5)
+        ttk.Label(settings, text="Freq [MHz]").grid(row=0, column=0, sticky="w")
+        self.freq_entry = ttk.Entry(settings, width=12)
         self.freq_entry.grid(row=0, column=1)
         self.freq_entry.insert(0, str(self.freq / 1e6))
-        tk.Label(settings, text="Z0").grid(row=0, column=2)
-        self.z0_entry = tk.Entry(settings, width=6)
+        ttk.Label(settings, text="Z0").grid(row=0, column=2, sticky="w")
+        self.z0_entry = ttk.Entry(settings, width=6)
         self.z0_entry.grid(row=0, column=3)
         self.z0_entry.insert(0, str(self.z0))
 
-        tk.Label(settings, text="Z_A").grid(row=1, column=0)
-        self.za_entry = tk.Entry(settings, width=12)
+        ttk.Label(settings, text="Steps").grid(row=2, column=0, sticky="w")
+        self.steps_entry = ttk.Entry(settings, width=6)
+        self.steps_entry.grid(row=2, column=1)
+        self.steps_entry.insert(0, str(self.trace_steps))
+
+        self.za_mode = tk.StringVar(value="Z")
+        self.za_label = ttk.Label(settings, text="Z_A")
+        self.za_label.grid(row=1, column=0)
+        self.za_entry = ttk.Entry(settings, width=12)
         self.za_entry.grid(row=1, column=1, columnspan=3, sticky="we")
         self.za_entry.insert(0, "50+0j")
-        tk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=4, rowspan=2, sticky="ns")
+        ttk.OptionMenu(settings, self.za_mode, self.za_mode.get(), "Z", "Y", command=lambda _: self.update_za_label()).grid(row=1, column=4)
+        ttk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=3, sticky="ns")
 
         self.canvas = tk.Canvas(top_canvas, width=600, height=300, bg="white")
         self.canvas.pack(fill="both", expand=True)
@@ -372,21 +401,27 @@ class SmithChartApp(tk.Tk):
         self.adm_canvas.pack(fill="both", expand=True)
 
         self.comp_listbox = tk.Listbox(right, width=40)
-        self.comp_listbox.pack(fill="y")
+        self.comp_listbox.pack(fill="y", padx=5)
         self.comp_listbox.bind("<Double-Button-1>", self.edit_component)
 
         self.circ_canvas = tk.Canvas(right, width=200, height=120, bg="white")
-        self.circ_canvas.pack(fill="x")
+        self.circ_canvas.pack(fill="x", padx=5)
 
-        btn_frame = tk.Frame(right)
-        btn_frame.pack(fill="x")
+        # status bar for coordinates
+        self.coord_var = tk.StringVar(value="Bereit")
+        self.status = ttk.Label(self, textvariable=self.coord_var, relief="sunken", anchor="w")
+        self.status.pack(side="bottom", fill="x")
 
-        tk.Button(btn_frame, text="Add Resistor", command=self.add_resistor).pack(fill="x")
-        tk.Button(btn_frame, text="Add Inductor", command=self.add_inductor).pack(fill="x")
-        tk.Button(btn_frame, text="Add Capacitor", command=self.add_capacitor).pack(fill="x")
-        tk.Button(btn_frame, text="Add TL", command=self.add_tline).pack(fill="x")
-        tk.Button(btn_frame, text="Add Stub", command=self.add_stub).pack(fill="x")
-        tk.Button(btn_frame, text="Remove Last", command=self.remove_last).pack(fill="x")
+        self.update_za_label()
+
+        control = ttk.LabelFrame(right, text="Components")
+        control.pack(fill="x", padx=5, pady=5)
+        self.comp_type = tk.StringVar(value="Resistor")
+        ttk.Combobox(control, textvariable=self.comp_type,
+                     values=["Resistor", "Inductor", "Capacitor", "TL", "Stub"],
+                     state="readonly").pack(fill="x", padx=5, pady=2)
+        ttk.Button(control, text="Add", command=self.add_component).pack(fill="x", padx=5, pady=2)
+        ttk.Button(control, text="Remove Last", command=self.remove_last).pack(fill="x", padx=5, pady=2)
 
         self.canvas.bind("<Configure>", self.on_canvas_resize)
         self.adm_canvas.bind("<Configure>", self.on_canvas_resize)
@@ -406,30 +441,64 @@ class SmithChartApp(tk.Tk):
         radius = min(w, h) // 2 - 10
         cx, cy = center
         r = radius
+        # dynamic fonts for chart annotations
+        text_font = ("TkDefaultFont", max(8, int(r / 18)))
+        title_font = ("TkDefaultFont", max(10, int(r / 14)))
         canvas.create_oval(cx - r, cy - r, cx + r, cy + r)
         canvas.create_line(cx - r, cy, cx + r, cy, fill="lightgray")
-        canvas.create_line(cx, cy - r, cx, cy + r, fill="lightgray")
         if mode == "impedance":
-            canvas.create_text(cx + r + 15, cy, text="Re(z/Z0)", anchor="w")
-            canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e")
-            canvas.create_text(cx, cy - r - 15, text="Im(z/Z0)", anchor="s")
-            canvas.create_text(cx, cy + r + 15, text="-Im(z/Z0)", anchor="n")
+            canvas.create_text(cx + r + 15, cy, text="Re(z/Z0)", anchor="w", font=text_font)
+            canvas.create_text(cx - r - 15, cy, text="-Re(z/Z0)", anchor="e", font=text_font)
+            canvas.create_text(cx, cy - r - 15, text="Im(z/Z0)", anchor="s", font=text_font)
+            canvas.create_text(cx, cy + r + 15, text="-Im(z/Z0)", anchor="n", font=text_font)
+            canvas.create_text(cx, 10, text="Impedanzebene", anchor="n", font=title_font)
         else:
-            canvas.create_text(cx + r + 15, cy, text="Re(y/Y0)", anchor="w")
-            canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e")
-            canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s")
-            canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n")
+            canvas.create_text(cx + r + 15, cy, text="Re(y/Y0)", anchor="w", font=text_font)
+            canvas.create_text(cx - r - 15, cy, text="-Re(y/Y0)", anchor="e", font=text_font)
+            canvas.create_text(cx, cy - r - 15, text="Im(y/Y0)", anchor="s", font=text_font)
+            canvas.create_text(cx, cy + r + 15, text="-Im(y/Y0)", anchor="n", font=text_font)
+            canvas.create_text(cx, 10, text="Admittanzebene", anchor="n", font=title_font)
+
+        # ticks and labels on the real axis
+        real_vals = [0, 0.2, 0.5, 1, 2, 5]
+        for val in real_vals:
+            if val == 0:
+                x = cx - r
+            else:
+                x = cx + r * (val - 1) / (val + 1)
+            canvas.create_line(x, cy - 5, x, cy + 5, fill="gray")
+            canvas.create_text(x, cy + 10, text=str(val), fill="gray", font=text_font, anchor="n")
+        canvas.create_line(cx + r, cy - 5, cx + r, cy + 5, fill="gray")
+        canvas.create_text(cx + r, cy + 10, text="∞", fill="gray", font=text_font, anchor="n")
+
+        # ticks and labels on the imaginary axis at the outer radius
+        imag_vals = [0.2, 0.5, 1, 2, 5]
+        for val in imag_vals:
+            theta = 2 * math.atan(1 / val)
+            x = cx + r * math.cos(theta)
+            y = cy - r * math.sin(theta)
+            canvas.create_line(x, y, x + 5 * math.cos(theta), y - 5 * math.sin(theta), fill="gray")
+            label = f"+j{val}" if mode == "impedance" else f"+jb{val}"
+            canvas.create_text(x + 10 * math.cos(theta), y - 10 * math.sin(theta), text=label, fill="gray", font=text_font)
+            x = cx + r * math.cos(theta)
+            y = cy + r * math.sin(theta)
+            canvas.create_line(x, y, x + 5 * math.cos(theta), y + 5 * math.sin(theta), fill="gray")
+            label = f"-j{val}" if mode == "impedance" else f"-jb{val}"
+            canvas.create_text(x + 10 * math.cos(theta), y + 10 * math.sin(theta), text=label, fill="gray", font=text_font)
+
+        # constant resistance/conductance circles
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / (1 + val)
             off = r * val / (1 + val)
             canvas.create_oval(cx + off - cr, cy - cr, cx + off + cr, cy + cr, outline="lightgray")
-            canvas.create_text(cx + off + cr + 15, cy, text=f"r={val}", anchor="w", fill="gray")
+            label = f"r={val}" if mode == "impedance" else f"g={val}"
+            canvas.create_text(cx + off + cr + 15, cy, text=label, anchor="w", fill="gray", font=text_font)
+
+        # constant reactance/susceptance arcs
         for val in [0.2, 0.5, 1, 2, 5]:
             cr = r / val
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=90, extent=180, style='arc', outline="lightgray")
             canvas.create_arc(cx - cr, cy - cr, cx + cr, cy + cr, start=-90, extent=180, style='arc', outline="lightgray")
-            canvas.create_text(cx, cy - cr - 10, text=f"+jx={val}", fill="gray")
-            canvas.create_text(cx, cy + cr + 10, text=f"-jx={val}", fill="gray")
         return center, radius
 
     def draw_chart(self):
@@ -492,6 +561,19 @@ class SmithChartApp(tk.Tk):
             self.update_point()
             self.draw_circuit()
 
+    def add_component(self):
+        kind = self.comp_type.get()
+        if kind == "Resistor":
+            self.add_resistor()
+        elif kind == "Inductor":
+            self.add_inductor()
+        elif kind == "Capacitor":
+            self.add_capacitor()
+        elif kind == "TL":
+            self.add_tline()
+        else:
+            self.add_stub()
+
     def remove_last(self):
         if self.components:
             self.components.pop()
@@ -499,13 +581,46 @@ class SmithChartApp(tk.Tk):
             self.update_point()
             self.draw_circuit()
 
+    def reset_app(self):
+        self.components.clear()
+        self.comp_listbox.delete(0, tk.END)
+        self.freq = 1e9
+        self.z0 = 50.0
+        self.za = 50+0j
+        self.trace_steps = TRACE_STEPS
+        self.freq_entry.delete(0, tk.END)
+        self.freq_entry.insert(0, str(self.freq / 1e6))
+        self.z0_entry.delete(0, tk.END)
+        self.z0_entry.insert(0, str(self.z0))
+        self.steps_entry.delete(0, tk.END)
+        self.steps_entry.insert(0, str(self.trace_steps))
+        self.za_mode.set("Z")
+        self.update_za_label()
+        self.za_entry.delete(0, tk.END)
+        self.za_entry.insert(0, "50+0j")
+        self.draw_chart()
+        self.update_point()
+        self.draw_circuit()
+
+    def update_za_label(self):
+        self.za_label.config(text="Z_A" if self.za_mode.get() == "Z" else "Y_A")
+
     def apply_settings(self):
         try:
             self.freq = float(self.freq_entry.get()) * 1e6
             self.z0 = float(self.z0_entry.get())
-            self.za = parse_complex_impedance(self.za_entry.get())
+            self.trace_steps = int(self.steps_entry.get())
+            if self.trace_steps < 1:
+                raise ValueError
+            if self.za_mode.get() == "Z":
+                self.za = parse_complex_impedance(self.za_entry.get())
+            else:
+                ya = parse_complex_impedance(self.za_entry.get())
+                if ya == 0:
+                    raise ValueError
+                self.za = 1 / ya
         except ValueError:
-            messagebox.showerror("Error", "Invalid frequency, Z0 or Z_A")
+            messagebox.showerror("Error", "Invalid frequency, Z0, steps or Z_A/Y_A")
             return
         self.draw_chart()
         self.update_point()
@@ -542,8 +657,9 @@ class SmithChartApp(tk.Tk):
             comps[index] = temp_comp
         self.update_point(comps)
 
-    def compute_trace(self, Z_start, comp, steps=TRACE_STEPS):
+    def compute_trace(self, Z_start, comp, steps=None):
         """Return a list of impedances along the path for component."""
+        steps = steps or self.trace_steps
         res = []
         w = PI2 * self.freq
         typ = comp.get("type")
@@ -626,6 +742,24 @@ class SmithChartApp(tk.Tk):
         x, y = pts_y[-1]
         self.adm_canvas.coords(self.adm_point, x-5, y-5, x+5, y+5)
 
+        # show numeric values for the current point in impedance and admittance form
+        zn = Z / self.z0
+        gamma = (Z - self.z0) / (Z + self.z0)
+        Y = 1 / Z if Z != 0 else complex('inf')
+        yn = Y * self.z0 if Y != complex('inf') else complex('inf')
+        text = (
+            f"Z = {Z.real:.2f} {Z.imag:+.2f}j \u03a9\n"
+            f"r = {zn.real:.3f}, x = {zn.imag:.3f}\n"
+        )
+        if Y != complex('inf'):
+            text += f"Y = {Y.real:.4f} {Y.imag:+.4f}j S\n"
+        else:
+            text += "Y = \u221E S\n"
+        if yn != complex('inf'):
+            text += f"g = {yn.real:.3f}, b = {yn.imag:.3f}\n"
+        text += f"\u0393 = {gamma.real:.3f} {gamma.imag:+.3f}j"
+        self.coord_var.set(text)
+
     def draw_circuit(self):
         c = self.circ_canvas
         c.delete("all")
@@ -637,7 +771,8 @@ class SmithChartApp(tk.Tk):
         c.create_oval(src_x-5, y-5, src_x+5, y+5)
         c.create_text(src_x, y+15, text="Src")
         c.create_rectangle(load_x-10, y-10, load_x+10, y+10)
-        c.create_text(load_x, y+20, text=f"Z_A\n{self.za_entry.get()}")
+        load_lbl = "Z_A" if self.za_mode.get() == "Z" else "Y_A"
+        c.create_text(load_x, y+20, text=f"{load_lbl}\n{self.za_entry.get()}")
         # draw components starting at the load and moving toward the source
         x = load_x - 20
         for comp in self.components:
