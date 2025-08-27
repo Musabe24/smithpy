@@ -1,49 +1,71 @@
-SmithPy version 1.0.0
+# SmithPy
 
-Interactive Smith-Chart written in Python.
+SmithPy is a simple graphical tool for exploring radio‑frequency impedance matching with the Smith chart.
 
-This repository contains a GUI application using `tkinter`/`ttk`.
-Install the package in editable mode and run the app with:
+## What is a Smith chart?
+
+A Smith chart is a diagram used by engineers to show how electrical impedance changes along transmission lines. SmithPy lets you add resistors, capacitors, inductors and transmission‑line segments and immediately see how they move on the chart.
+
+## Quick start for beginners
+
+Follow these steps even if you have never used Python before.
+
+### 1. Install Python
+
+1. Go to <https://www.python.org/downloads/>.
+2. Download the latest **Python 3** release for your operating system.
+3. Run the installer. On Windows check the option **Add Python to PATH**.
+
+### 2. Get SmithPy
+
+Download the project code:
+
+- If you use Git:
+
+  ```bash
+  git clone <repository-url>
+  ```
+
+- Otherwise, click the **Download ZIP** button on the repository page and unzip the file.
+
+### 3. Open a terminal in the project folder
+
+- **Windows:** open *Command Prompt* and run `cd path\to\smithpy`
+- **macOS / Linux:** open *Terminal* and run `cd path/to/smithpy`
+
+### 4. Create a virtual environment (recommended)
+
+```bash
+python -m venv venv
+```
+
+Activate it with:
+
+- **Windows:** `venv\Scripts\activate`
+- **macOS / Linux:** `source venv/bin/activate`
+
+### 5. Install and run
 
 ```bash
 pip install -e .
 python -m smithpy
 ```
 
-Alternatively, the GUI can be launched directly without installation:
+A window with the Smith chart should appear.
+
+### 6. Run without installing
+
+If you only want to try the program once:
 
 ```bash
 python src/smithpy/app.py
 ```
 
-The GUI shows two Smith Charts on the left: the upper one displays the
-impedance plane while the lower one shows the corresponding admittance
-plane. On the right is a list of components with a small circuit sketch.
-Inductors, capacitors and resistors can be added either in series or
-parallel by entering values like `10 nH`, `50 uF` or `75`. Transmission
-lines and stubs ask for their characteristic impedance so that different
-`Z0` values can be used. Lengths can be entered either in degrees or as
-the fraction `l/λ`. The entry may include a trailing `°` or `λ`, e.g.
-`90°` or `0.25 λ`. The chart updates automatically.
-The circuit sketch shows the source on the left and the load `Z_A` on the right.
-Components are drawn starting at the load so their order matches the impedance calculations.
-`Z_A` accepts complex values such as `75+30j` so arbitrary
-loads can be matched. The frequency entry expects MHz and the chart
-normalization `Z0` can be set in the upper-right panel. Components are
-added through a single dialog window and may be edited later by
-double-clicking their entry in the list. Value sliders inside these
-dialogs let you change component parameters while the resulting
-impedance path is previewed live on the Smith Chart. Each dialog offers
-fields to set the slider's minimum and maximum values so you can adjust
-the range to your needs. Slider resolution adapts automatically to the
-selected range so even small values can be tuned precisely.
+## Troubleshooting
 
-The interface uses themed `ttk` widgets, offers a menu bar with a reset
-function and an about dialog, and provides a component selector to keep
-the control area tidy. A status bar shows the current impedance and
-admittance coordinates in real time. Constant resistance and reactance
-lines on the chart are labeled for easier reference. Impedance
-transformations are drawn as smooth arcs that follow the actual
-trajectory on the chart rather than straight lines. The calculation uses
-adjustable intermediate steps (default 200) so even long arcs remain
-accurate; the number of points can be changed in the Settings panel.
+- If `python` is not recognized, restart your terminal or make sure Python was added to PATH during installation.
+- If the application window does not appear, ensure you are running on a system with a graphical desktop environment.
+
+## License
+
+This project is licensed under the MIT License.
