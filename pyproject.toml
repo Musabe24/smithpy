@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smithpy"
+version = "1.0.0"
+description = "Smith chart GUI tool"
+requires-python = ">=3.8"
+authors = [
+  {name="Unknown"}
+]
+readme = "README.md"
+keywords = ["smith", "chart", "rf"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License"
+]
+
+[project.scripts]
+smithpy = "smithpy.app:main"

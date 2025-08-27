@@ -1,10 +1,12 @@
+SmithPy version 1.0.0
+
 Interactive Smith-Chart written in Python.
 
 This repository contains a GUI application using `tkinter`/`ttk`.
 Run the app with:
 
 ```bash
-python3 smith_gui.py
+python -m smithpy
 ```
 
 The GUI shows two Smith Charts on the left: the upper one displays the
