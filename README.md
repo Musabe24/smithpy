@@ -23,7 +23,7 @@ Download the project code:
 - If you use Git:
 
   ```bash
-  git clone <repository-url>
+  git clone https://github.com/Musabe24/smithpy.git
   ```
 
 - Otherwise, click the **Download ZIP** button on the repository page and unzip the file.
