@@ -35,5 +35,6 @@ the control area tidy. A status bar shows the current impedance and
 admittance coordinates in real time. Constant resistance and reactance
 lines on the chart are labeled for easier reference. Impedance
 transformations are drawn as smooth arcs that follow the actual
-trajectory on the chart rather than straight lines. The calculation now
-uses many intermediate steps so even long arcs remain accurate.
+trajectory on the chart rather than straight lines. The calculation uses
+adjustable intermediate steps (default 200) so even long arcs remain
+accurate; the number of points can be changed in the Settings panel.

@@ -4,8 +4,8 @@ import re
 import math
 
 PI2 = 2 * 3.141592653589793
-# number of intermediate points for each component
-TRACE_STEPS = 1000
+# default number of intermediate points for each component
+TRACE_STEPS = 200
 
 
 def parse_lc_value(text):
@@ -345,6 +345,7 @@ class SmithChartApp(tk.Tk):
         self.freq = 1e9  # 1 GHz for calculations
         self.z0 = 50.0
         self.za = 50+0j
+        self.trace_steps = TRACE_STEPS
 
         menubar = tk.Menu(self)
         filem = tk.Menu(menubar, tearoff=0)
@@ -380,6 +381,11 @@ class SmithChartApp(tk.Tk):
         self.z0_entry.grid(row=0, column=3)
         self.z0_entry.insert(0, str(self.z0))
 
+        ttk.Label(settings, text="Steps").grid(row=2, column=0, sticky="w")
+        self.steps_entry = ttk.Entry(settings, width=6)
+        self.steps_entry.grid(row=2, column=1)
+        self.steps_entry.insert(0, str(self.trace_steps))
+
         self.za_mode = tk.StringVar(value="Z")
         self.za_label = ttk.Label(settings, text="Z_A")
         self.za_label.grid(row=1, column=0)
@@ -387,7 +393,7 @@ class SmithChartApp(tk.Tk):
         self.za_entry.grid(row=1, column=1, columnspan=3, sticky="we")
         self.za_entry.insert(0, "50+0j")
         ttk.OptionMenu(settings, self.za_mode, self.za_mode.get(), "Z", "Y", command=lambda _: self.update_za_label()).grid(row=1, column=4)
-        ttk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=2, sticky="ns")
+        ttk.Button(settings, text="Apply", command=self.apply_settings).grid(row=0, column=5, rowspan=3, sticky="ns")
 
         self.canvas = tk.Canvas(top_canvas, width=600, height=300, bg="white")
         self.canvas.pack(fill="both", expand=True)
@@ -581,10 +587,13 @@ class SmithChartApp(tk.Tk):
         self.freq = 1e9
         self.z0 = 50.0
         self.za = 50+0j
+        self.trace_steps = TRACE_STEPS
         self.freq_entry.delete(0, tk.END)
         self.freq_entry.insert(0, str(self.freq / 1e6))
         self.z0_entry.delete(0, tk.END)
         self.z0_entry.insert(0, str(self.z0))
+        self.steps_entry.delete(0, tk.END)
+        self.steps_entry.insert(0, str(self.trace_steps))
         self.za_mode.set("Z")
         self.update_za_label()
         self.za_entry.delete(0, tk.END)
@@ -600,6 +609,9 @@ class SmithChartApp(tk.Tk):
         try:
             self.freq = float(self.freq_entry.get()) * 1e6
             self.z0 = float(self.z0_entry.get())
+            self.trace_steps = int(self.steps_entry.get())
+            if self.trace_steps < 1:
+                raise ValueError
             if self.za_mode.get() == "Z":
                 self.za = parse_complex_impedance(self.za_entry.get())
             else:
@@ -608,7 +620,7 @@ class SmithChartApp(tk.Tk):
                     raise ValueError
                 self.za = 1 / ya
         except ValueError:
-            messagebox.showerror("Error", "Invalid frequency, Z0 or Z_A/Y_A")
+            messagebox.showerror("Error", "Invalid frequency, Z0, steps or Z_A/Y_A")
             return
         self.draw_chart()
         self.update_point()
@@ -645,8 +657,9 @@ class SmithChartApp(tk.Tk):
             comps[index] = temp_comp
         self.update_point(comps)
 
-    def compute_trace(self, Z_start, comp, steps=TRACE_STEPS):
+    def compute_trace(self, Z_start, comp, steps=None):
         """Return a list of impedances along the path for component."""
+        steps = steps or self.trace_steps
         res = []
         w = PI2 * self.freq
         typ = comp.get("type")
